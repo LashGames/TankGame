@@ -19,6 +19,7 @@ import java.net.Socket;
 public class Client {
 
     private DataOutputStream dataOutputStream;
+    private DataOutputStream stream;
 
     public void connectToServer() throws IOException {
 
@@ -28,6 +29,17 @@ public class Client {
         dataOutputStream = new DataOutputStream(socket.getOutputStream());
         dataOutputStream.writeBytes("JOIN#");
         dataOutputStream.flush();
+        socket.close();
+    }
+    
+    public void send(String message) throws IOException{
+        
+        String serverAddress = "127.0.0.1";
+        int port = 6000;
+        Socket socket = new Socket(serverAddress, port);
+        stream = new DataOutputStream(socket.getOutputStream());
+        stream.writeBytes(message);
+        stream.flush();
         socket.close();
     }
     
