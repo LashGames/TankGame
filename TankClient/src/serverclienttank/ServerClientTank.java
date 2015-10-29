@@ -6,6 +6,7 @@
 package serverclienttank;
 
 import client.Client;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,6 +17,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import map.Map;
 
 /**
  *
@@ -28,59 +31,59 @@ public class ServerClientTank {
      */
     public static void main(String[] args) throws IOException {
         
-//        Socket socket;
-//        System.out.println("The server is running.");
-//        ServerSocket listener = new ServerSocket(7000);
+        Socket socket = null;
+        System.out.println("The server is running.");
+        
         Client client = new Client();
         client.connectToServer();
-//        try {
-//            while (true) {
-//                try {
-//                    socket = listener.accept();
-//                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//                    String message = reader.readLine();
-//                    System.out.println(message);
-//                    client.send("RIGHT#");
-//                    client.send("SHOOT#");
-//
-//                } catch (IOException ex) {
-//                }
-//            }
-//        } finally {
-//            listener.close();
-//        }
+        Handler handler = new Handler(socket, client);
+        handler.start();
+        
     }
 
-//    private static class Handler extends Thread {
-//
-//        private Socket socket;
-//        private DataOutputStream dataOutputStream;
-//        private BufferedReader bufferedReader;
-//
-//        public Handler(Socket socket) {
-//            this.socket = socket;
-//        }
-//
-//        public void run() {
-//            try {
-//
-//                while (true) {
-//                    bufferedReader = new BufferedReader(new InputStreamReader(
-//                            socket.getInputStream()));
-//                    dataOutputStream = new DataOutputStream(socket.getOutputStream());
-//                    String input = bufferedReader.readLine();
-//                    dataOutputStream.writeBytes("LEFT#");
-//                    //dataOutputStream.flush();
-//                }
-//            } catch (IOException e) {
-//                System.out.println(e);
-//            } finally {
-//
-//                try {
-//                    socket.close();
-//                } catch (IOException e) {
-//                }
-//            }
-//        }
-//    }
+    private static class Handler extends Thread {
+
+        private Socket socket;
+        private Client client;
+        ServerSocket listener;
+        Map map = new Map();
+        public Handler(Socket socket, Client client) {
+            this.socket = socket;
+            this.client = client;
+        }
+
+        public void run() {
+            
+            try {
+                listener = new ServerSocket(7000);
+            while (true) {
+                try {
+                    socket = listener.accept();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    String message = reader.readLine();
+                    System.out.println(message);
+                    if(message.charAt(0)=='I' && message.charAt(1)==':'){
+                        map.createMap(message);
+                    }
+//                    client.send("RIGHT#");
+//                    client.send("SHOOT#");
+                    String command = JOptionPane.showInputDialog(
+            "Enter a command:");
+                    client.sendCommand(command);
+                    
+
+                } catch (IOException ex) {
+                }
+            }
+        }   catch (IOException ex) {
+                Logger.getLogger(ServerClientTank.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    listener.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(ServerClientTank.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        }
+        }
+    }
 }

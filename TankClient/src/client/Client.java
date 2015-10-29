@@ -32,7 +32,7 @@ public class Client {
         socket.close();
     }
     
-    public void send(String message) throws IOException{
+    public void sendCommand(String message) throws IOException{
         
         String serverAddress = "127.0.0.1";
         int port = 6000;
