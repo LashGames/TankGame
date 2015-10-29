@@ -6,6 +6,8 @@
 package map;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
+import serverclienttank.Player;
 
 /**
  *
@@ -16,6 +18,7 @@ public class Map {
     int mapSize = 10;
     int x,y;
     String map[][] = new String[mapSize][mapSize];
+    ArrayList<Player> playerList = new ArrayList<>();
     ArrayList<String> brick = new ArrayList<>();
     ArrayList<String> stone = new ArrayList<>();
     ArrayList<String> water = new ArrayList<>();
@@ -67,5 +70,33 @@ public class Map {
          }
         
     }
-   
+    public String[][] getMap(){
+        return map;
+    }
+
+    public void updateMap(String message) {
+        StringTokenizer st=new StringTokenizer(message, ":");
+        ArrayList<String> playerStringList=new ArrayList<>();
+        ArrayList<String> brickList=new ArrayList<>();
+        
+        st.nextToken();
+        while(st.hasMoreTokens()){
+            String token = st.nextToken();
+            if(token.charAt(0)=='P'){
+                playerStringList.add(token);
+            }else{
+                brickList.add(token);
+            }
+        }
+        playerList=new ArrayList<>();
+        for(String playerString : playerStringList) {
+            StringTokenizer st2=new StringTokenizer(playerString, "; ,"); 
+            Player player = new Player(st2.nextToken(), Integer.parseInt(st2.nextToken()), Integer.parseInt(st2.nextToken()),Integer.parseInt(st2.nextToken()));
+            playerList.add(player);      
+                    
+        }
+    }
+    public ArrayList<Player> getPlayers(){
+        return playerList;
+    }   
 }
